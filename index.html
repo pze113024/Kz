@@ -2,21 +2,55 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>⚡ 45秒趣味猜謎大挑戰</title>
     <style>
-        body { font-family: "Microsoft JhengHei", sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: #fdfcf0; }
-        #game-container { background: white; padding: 2.5rem; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); width: 90%; max-width: 550px; text-align: center; border: 4px solid #f39c12; }
+        * { box-sizing: border-box; }
+        body { 
+            font-family: "Microsoft JhengHei", sans-serif; 
+            display: flex; justify-content: center; align-items: center; 
+            min-height: 100vh; margin: 0; background: #fdfcf0; 
+            padding: 10px;
+        }
+        #game-container { 
+            background: white; padding: 2rem; border-radius: 20px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15); 
+            width: 100%; max-width: 550px; text-align: center; 
+            border: 4px solid #f39c12; 
+        }
         .timer { font-size: 2.5rem; color: #e74c3c; font-weight: bold; margin-bottom: 1.5rem; }
-        .question { font-size: 1.5rem; font-weight: bold; color: #2c3e50; margin-bottom: 2rem; min-height: 3.5em; display: flex; align-items: center; justify-content: center; line-height: 1.6; }
+        .question { 
+            font-size: 1.5rem; font-weight: bold; color: #2c3e50; 
+            margin-bottom: 2rem; min-height: 3.5em; 
+            display: flex; align-items: center; justify-content: center; line-height: 1.6; 
+        }
         .options { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        button { padding: 18px 10px; font-size: 1.1rem; cursor: pointer; border: 2px solid #f39c12; background: white; color: #d35400; border-radius: 12px; transition: all 0.2s ease; font-weight: bold; outline: none; }
         
-        /* 答題回饋顏色 */
+        /* 手機直向 RWD 優化 */
+        @media (max-width: 480px) {
+            #game-container { padding: 1.2rem; }
+            .options { grid-template-columns: 1fr; } /* 手機上一列一個，更好按 */
+            .timer { font-size: 2rem; }
+            .question { font-size: 1.3rem; margin-bottom: 1.5rem; }
+            button { padding: 15px 10px !important; font-size: 1.1rem !important; width: 100%; }
+        }
+
+        button { 
+            padding: 18px 10px; font-size: 1.1rem; cursor: pointer; 
+            border: 2px solid #f39c12; background: white; color: #d35400; 
+            border-radius: 12px; transition: all 0.2s ease; font-weight: bold; outline: none; 
+        }
+        
+        /* 答題回饋顏色：確保下一題會重置 */
         button.correct { background-color: #2ecc71 !important; color: white !important; border-color: #27ae60 !important; }
         button.wrong { background-color: #e74c3c !important; color: white !important; border-color: #c0392b !important; }
         
-        button:hover:not(:disabled) { background: #f39c12; color: white; transform: translateY(-2px); }
-        .start-btn { background: #e67e22; color: white; border: none; padding: 15px 40px; font-size: 1.5rem; border-radius: 50px; cursor: pointer; }
+        button:hover:not(:disabled) { background: #f39c12; color: white; }
+        
+        .start-btn { 
+            background: #e67e22; color: white; border: none; 
+            padding: 15px 40px; font-size: 1.5rem; border-radius: 50px; cursor: pointer; 
+        }
         #score-board { display: none; }
         .hidden { display: none; }
     </style>
@@ -26,7 +60,7 @@
 <div id="game-container">
     <div id="start-screen">
         <h1>🧠 趣味猜謎大挑戰</h1>
-        <p>限時 45 秒，答題後會顯示對錯喔！</p>
+        <p>限時 45 秒，準備好了嗎？</p>
         <button class="start-btn" onclick="startGame()">開始遊戲 GO!</button>
     </div>
 
@@ -101,7 +135,7 @@
     let timeLeft = 45;
     let timerInterval;
     let availableQuestions = [];
-    let isChecking = false; // 防止連續點擊
+    let isChecking = false;
 
     function startGame() {
         document.getElementById('start-screen').classList.add('hidden');
@@ -119,27 +153,21 @@
 
     function nextQuestion() {
         isChecking = false;
-        if (availableQuestions.length === 0) {
-            availableQuestions = [...questions];
-        }
+        if (availableQuestions.length === 0) availableQuestions = [...questions];
 
         const randomIndex = Math.floor(Math.random() * availableQuestions.length);
         const currentQuestion = availableQuestions.splice(randomIndex, 1)[0];
 
         document.getElementById('question-text').innerText = currentQuestion.question;
-        
         const container = document.getElementById('options-container');
-        container.innerHTML = '';
+        container.innerHTML = ''; // 徹底清空上一題的按鈕
         
-        let shuffledOptions = [...currentQuestion.options];
-        for (let i = shuffledOptions.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffledOptions[i], shuffledOptions[j]] = [shuffledOptions[j], shuffledOptions[i]];
-        }
+        let shuffledOptions = [...currentQuestion.options].sort(() => Math.random() - 0.5);
 
         shuffledOptions.forEach(opt => {
             const btn = document.createElement('button');
             btn.innerText = opt;
+            btn.className = ''; // 確保樣式是乾淨的
             btn.onclick = () => checkResult(btn, opt, currentQuestion.answer);
             container.appendChild(btn);
         });
@@ -150,24 +178,18 @@
         isChecking = true;
 
         const allButtons = document.querySelectorAll('#options-container button');
-        
         allButtons.forEach(btn => {
-            btn.disabled = true; // 點擊後禁用所有按鈕
-            if (btn.innerText === correctText) {
-                btn.classList.add('correct'); // 正確答案顯示綠色
-            }
+            btn.disabled = true;
+            if (btn.innerText === correctText) btn.classList.add('correct');
         });
 
         if (selectedText === correctText) {
             score++;
         } else {
-            selectedBtn.classList.add('wrong'); // 選錯的顯示紅色
+            selectedBtn.classList.add('wrong');
         }
 
-        // 0.5 秒後切換下一題
-        setTimeout(() => {
-            nextQuestion();
-        }, 500);
+        setTimeout(nextQuestion, 500);
     }
 
     function endGame() {
