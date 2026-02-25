@@ -5,12 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>⚡ 45秒趣味猜謎大挑戰</title>
     <style>
-        * { box-sizing: border-box; }
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; /* 移除手機點擊時的藍色高亮 */
+        }
         body { 
             font-family: "Microsoft JhengHei", sans-serif; 
             display: flex; justify-content: center; align-items: center; 
             min-height: 100vh; margin: 0; background: #fdfcf0; 
             padding: 10px;
+            user-select: none; /* 防止手機選取到文字 */
         }
         #game-container { 
             background: white; padding: 2rem; border-radius: 20px; 
@@ -29,24 +33,28 @@
         /* 手機直向 RWD 優化 */
         @media (max-width: 480px) {
             #game-container { padding: 1.2rem; }
-            .options { grid-template-columns: 1fr; } /* 手機上一列一個，更好按 */
+            .options { grid-template-columns: 1fr; }
             .timer { font-size: 2rem; }
             .question { font-size: 1.3rem; margin-bottom: 1.5rem; }
-            button { padding: 15px 10px !important; font-size: 1.1rem !important; width: 100%; }
+            button { padding: 18px 10px !important; font-size: 1.1rem !important; }
         }
 
         button { 
             padding: 18px 10px; font-size: 1.1rem; cursor: pointer; 
             border: 2px solid #f39c12; background: white; color: #d35400; 
-            border-radius: 12px; transition: all 0.2s ease; font-weight: bold; outline: none; 
+            border-radius: 12px; transition: background 0.1s; font-weight: bold; 
+            outline: none; -webkit-appearance: none;
         }
         
-        /* 答題回饋顏色：確保下一題會重置 */
+        /* 修正殘留問題：明確區分狀態 */
         button.correct { background-color: #2ecc71 !important; color: white !important; border-color: #27ae60 !important; }
         button.wrong { background-color: #e74c3c !important; color: white !important; border-color: #c0392b !important; }
         
-        button:hover:not(:disabled) { background: #f39c12; color: white; }
-        
+        /* 移除 hover 在手機上的副作用，改用 active */
+        @media (min-width: 1025px) {
+            button:hover:not(:disabled) { background: #f39c12; color: white; }
+        }
+
         .start-btn { 
             background: #e67e22; color: white; border: none; 
             padding: 15px 40px; font-size: 1.5rem; border-radius: 50px; cursor: pointer; 
@@ -158,17 +166,22 @@
         const randomIndex = Math.floor(Math.random() * availableQuestions.length);
         const currentQuestion = availableQuestions.splice(randomIndex, 1)[0];
 
-        document.getElementById('question-text').innerText = currentQuestion.question;
+        // 徹底清空
         const container = document.getElementById('options-container');
-        container.innerHTML = ''; // 徹底清空上一題的按鈕
+        container.innerHTML = ''; 
+
+        document.getElementById('question-text').innerText = currentQuestion.question;
         
         let shuffledOptions = [...currentQuestion.options].sort(() => Math.random() - 0.5);
 
         shuffledOptions.forEach(opt => {
             const btn = document.createElement('button');
             btn.innerText = opt;
-            btn.className = ''; // 確保樣式是乾淨的
-            btn.onclick = () => checkResult(btn, opt, currentQuestion.answer);
+            // 點擊事件優化
+            btn.onclick = (e) => {
+                e.preventDefault();
+                checkResult(btn, opt, currentQuestion.answer);
+            };
             container.appendChild(btn);
         });
     }
@@ -180,7 +193,9 @@
         const allButtons = document.querySelectorAll('#options-container button');
         allButtons.forEach(btn => {
             btn.disabled = true;
-            if (btn.innerText === correctText) btn.classList.add('correct');
+            if (btn.innerText === correctText) {
+                btn.classList.add('correct');
+            }
         });
 
         if (selectedText === correctText) {
@@ -189,7 +204,8 @@
             selectedBtn.classList.add('wrong');
         }
 
-        setTimeout(nextQuestion, 500);
+        // 手機版建議 600ms，讓玩家看清楚正確答案
+        setTimeout(nextQuestion, 600);
     }
 
     function endGame() {
