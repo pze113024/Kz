@@ -87,6 +87,7 @@
 </div>
 
 <script>
+    // --- 題目題庫區 ---
     const questions = [
         { "question": "金金金金金（猜一明星）", "options": ["金城武","金秀賢","明金城","金士傑"], "answer": "金城武" },
         { "question": "電視機聲音關小聲點（猜一神明）", "options": ["觀世音","玉皇大帝","關公","文昌帝君"], "answer": "觀世音" },
@@ -140,22 +141,40 @@
         { "question": "什麼國家的人都不用電的？", "options": ["緬甸","泰國","韓國","日本"], "answer": "緬甸" }
     ];
 
+    // --- 遊戲邏輯區 ---
     let score = 0;
-    let questionCount = 0; // 目前答到第幾題
-    const maxQuestions = 20; // 最大題數限制
+    let questionCount = 0; 
+    const maxQuestions = 20; 
+    const PLAY_LIMIT = 3; // 設定限制次數
     let timeLeft = 45;
     let timerInterval;
     let availableQuestions = [];
     let isChecking = false;
 
     function startGame() {
+        // 遊玩次數檢查邏輯
+        let playHistory = localStorage.getItem('lanternQuizPlayCount') || 0;
+        playHistory = parseInt(playHistory);
+
+        if (playHistory >= PLAY_LIMIT) {
+            alert("哎呀！您的挑戰次數已用完囉 (上限 " + PLAY_LIMIT + " 次)。\n感謝您的參與！");
+            return;
+        }
+
+        // 通過檢查，增加次數紀錄
+        localStorage.setItem('lanternQuizPlayCount', playHistory + 1);
+
+        // 隱藏開始畫面，顯示遊戲畫面
         document.getElementById('start-screen').classList.add('hidden');
         document.getElementById('quiz-screen').classList.remove('hidden');
+        
+        // 初始化參數
         availableQuestions = [...questions];
         score = 0;
         questionCount = 0;
         timeLeft = 45;
 
+        // 啟動計時器
         timerInterval = setInterval(() => {
             timeLeft--;
             document.getElementById('time').innerText = timeLeft;
@@ -195,7 +214,7 @@
             const btn = document.createElement('button');
             btn.innerText = opt;
             btn.onclick = () => {
-                document.activeElement.blur(); // 關鍵修正：解決手機預亮問題
+                document.activeElement.blur(); // 解決手機預亮焦點問題
                 checkResult(btn, opt, currentQuestion.answer);
             };
             container.appendChild(btn);
@@ -218,6 +237,7 @@
             selectedBtn.classList.add('wrong');
         }
 
+        // 0.6 秒後切換
         setTimeout(nextQuestion, 600);
     }
 
