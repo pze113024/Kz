@@ -10,10 +10,8 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-DEJNETQZ2S');
 
-      // 自定義統計：發送遊戲開始事件
       function trackGameStart() {
         gtag('event', 'game_start', {
           'event_category': 'quiz',
@@ -23,16 +21,12 @@
     </script>
 
     <style>
-        * { 
-            box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent; 
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
             font-family: "Microsoft JhengHei", sans-serif; 
             display: flex; justify-content: center; align-items: center; 
             min-height: 100vh; margin: 0; background: #fdfcf0; 
-            padding: 10px;
-            user-select: none;
+            padding: 10px; user-select: none;
         }
         #game-container { 
             background: white; padding: 1.5rem; border-radius: 20px; 
@@ -43,38 +37,37 @@
         .status-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
         .timer { font-size: 1.8rem; color: #e74c3c; font-weight: bold; }
         .counter { font-size: 1.2rem; color: #7f8c8d; font-weight: bold; background: #eee; padding: 5px 15px; border-radius: 20px; }
-        
-        .question { 
-            font-size: 1.4rem; font-weight: bold; color: #2c3e50; 
-            margin-bottom: 1.5rem; min-height: 4em; 
-            display: flex; align-items: center; justify-content: center; line-height: 1.5; 
-        }
+        .question { font-size: 1.4rem; font-weight: bold; color: #2c3e50; margin-bottom: 1.5rem; min-height: 4em; display: flex; align-items: center; justify-content: center; line-height: 1.5; }
         .options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         
         @media (max-width: 480px) {
             .options { grid-template-columns: 1fr; }
             button { padding: 16px 10px !important; font-size: 1.1rem !important; }
-            .timer { font-size: 1.5rem; }
         }
 
         button { 
             padding: 18px 10px; font-size: 1.1rem; cursor: pointer; 
             border: 2px solid #f39c12; background: white; color: #d35400; 
-            border-radius: 12px; font-weight: bold; outline: none;
-            transition: background 0.1s;
+            border-radius: 12px; font-weight: bold; outline: none; transition: 0.1s;
         }
-        
         button.correct { background-color: #2ecc71 !important; color: white !important; border-color: #27ae60 !important; }
         button.wrong { background-color: #e74c3c !important; color: white !important; border-color: #c0392b !important; }
         
-        @media (min-width: 1025px) {
-            button:hover:not(:disabled) { background: #f39c12; color: white; }
+        .start-btn { background: #e67e22; color: white; border: none; padding: 15px 40px; font-size: 1.5rem; border-radius: 50px; cursor: pointer; }
+        
+        /* 問卷區塊樣式 */
+        .survey-box {
+            margin: 25px 0; padding: 20px; background: #fff9e6; 
+            border-radius: 15px; border: 2px dashed #f39c12;
         }
+        .survey-btn {
+            background: #27ae60; color: white; border: none;
+            padding: 12px 20px; font-size: 1.2rem; border-radius: 10px;
+            cursor: pointer; width: 100%; font-weight: bold;
+            box-shadow: 0 4px 0 #1e8449; margin-top: 10px;
+        }
+        .survey-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #1e8449; }
 
-        .start-btn { 
-            background: #e67e22; color: white; border: none; 
-            padding: 15px 40px; font-size: 1.5rem; border-radius: 50px; cursor: pointer; 
-        }
         .hidden { display: none; }
         #score-board { display: none; }
     </style>
@@ -100,12 +93,20 @@
     <div id="score-board">
         <h1 id="end-title">⏱️ 時間到！</h1>
         <p style="font-size: 1.5rem;">最終答對題數：<span id="final-score" style="color:#e67e22; font-size: 3rem;">0</span></p>
-        <button class="start-btn" onclick="location.reload()">再挑戰一次</button>
+        
+        <div class="survey-box">
+            <p style="margin: 0; color: #d35400; font-weight: bold;">🎁 感謝參與！請填寫問卷領取好禮</p>
+            <button class="survey-btn" onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLScT9hQ7M37i-dmsHVFZmmy6Rx_ZCRVQXoIchLFovZa32_Ir5A/viewform?usp=sf_link', '_blank')">
+                📝 點我前往活動問卷
+            </button>
+        </div>
+
+        <button class="start-btn" style="background: #95a5a6; padding: 10px 20px; font-size: 1rem;" onclick="location.reload()">再挑戰一次</button>
     </div>
 </div>
 
 <script>
-    // --- 題目題庫區 (請在此貼入你完整的 50 題) ---
+    // --- 題庫區 ---
     const questions = [
         { "question": "金金金金金（猜一明星）", "options": ["金城武","金秀賢","明金城","金士傑"], "answer": "金城武" },
         { "question": "電視機聲音關小聲點（猜一神明）", "options": ["觀世音","玉皇大帝","關公","文昌帝君"], "answer": "觀世音" },
@@ -124,7 +125,7 @@
         { "question": "孔子是我國最偉大的什麼家?", "options": ["老人家","運動家","藝術家","音樂家"], "answer": "老人家" },
         { "question": "甚麼運動是往後跑的？", "options": ["拔河","跳遠","標槍","鉛球"], "answer": "拔河" },
         { "question": "地層下陷(猜地名)", "options": ["深坑","卑南","崁頂","大寮"], "answer": "深坑" },
-        { "question": "被蚊子咬(猜地名)", "options": ["艋舺","枋寮","暖暖","瑞穗"], "answer": "艋舺" },
+        { "question": "被蚊子咬(猜地名)", "options": ["艋舺","枋寮","暖暖","傳穗"], "answer": "艋舺" },
         { "question": "不良少年(猜地名)", "options": ["太保","大甲","淡水","板橋"], "answer": "太保" },
         { "question": "四季如春(猜地名)", "options": ["恆春","長濱","暖暖","永康"], "answer": "恆春" },
         { "question": "失敗之子(猜地名)", "options": ["成功","大勝","歸來","卑南"], "answer": "成功" },
@@ -169,28 +170,20 @@
     let isChecking = false;
 
     function startGame() {
-        // 追蹤遊戲開始事件
-        if(typeof gtag === 'function') {
-            trackGameStart();
-        }
+        if(typeof gtag === 'function') trackGameStart();
 
         let playHistory = localStorage.getItem('lanternQuizPlayCount') || 0;
         playHistory = parseInt(playHistory);
-
         if (playHistory >= PLAY_LIMIT) {
             alert("哎呀！您的挑戰次數已用完囉 (上限 " + PLAY_LIMIT + " 次)。\n感謝您的參與！");
             return;
         }
-
         localStorage.setItem('lanternQuizPlayCount', playHistory + 1);
 
         document.getElementById('start-screen').classList.add('hidden');
         document.getElementById('quiz-screen').classList.remove('hidden');
-        
         availableQuestions = [...questions];
-        score = 0;
-        questionCount = 0;
-        timeLeft = 45;
+        score = 0; questionCount = 0; timeLeft = 45;
 
         timerInterval = setInterval(() => {
             timeLeft--;
@@ -200,7 +193,6 @@
                 endGame();
             }
         }, 1000);
-
         nextQuestion();
     }
 
@@ -211,10 +203,8 @@
             endGame();
             return;
         }
-
         questionCount++;
         document.getElementById('current-count').innerText = questionCount;
-
         if (availableQuestions.length === 0) availableQuestions = [...questions];
         const randomIndex = Math.floor(Math.random() * availableQuestions.length);
         const currentQuestion = availableQuestions.splice(randomIndex, 1)[0];
@@ -224,7 +214,6 @@
         document.getElementById('question-text').innerText = currentQuestion.question;
         
         let shuffledOptions = [...currentQuestion.options].sort(() => Math.random() - 0.5);
-
         shuffledOptions.forEach(opt => {
             const btn = document.createElement('button');
             btn.innerText = opt;
@@ -239,19 +228,12 @@
     function checkResult(selectedBtn, selectedText, correctText) {
         if (isChecking) return;
         isChecking = true;
-
         const allButtons = document.querySelectorAll('#options-container button');
         allButtons.forEach(btn => {
             btn.disabled = true;
             if (btn.innerText === correctText) btn.classList.add('correct');
         });
-
-        if (selectedText === correctText) {
-            score++;
-        } else {
-            selectedBtn.classList.add('wrong');
-        }
-
+        if (selectedText === correctText) score++; else selectedBtn.classList.add('wrong');
         setTimeout(nextQuestion, 600);
     }
 
