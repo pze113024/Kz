@@ -59,6 +59,7 @@
         }
         .hidden { display: none; }
         #score-board { display: none; }
+        #visitor-info { font-size: 0.9rem; color: #95a5a6; margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -82,12 +83,13 @@
     <div id="score-board">
         <h1 id="end-title">⏱️ 時間到！</h1>
         <p style="font-size: 1.5rem;">最終答對題數：<span id="final-score" style="color:#e67e22; font-size: 3rem;">0</span></p>
-        <button class="start-btn" onclick="location.reload()">再挑戰一次</button>
+        <div id="visitor-info">正在取得你是第幾位挑戰者...</div>
+        <button class="start-btn" style="margin-top: 20px;" onclick="location.reload()">再挑戰一次</button>
     </div>
 </div>
 
 <script>
-    // --- 題目題庫區 ---
+    // --- 題目題庫區 --- (保留你原本的所有題目)
     const questions = [
         { "question": "金金金金金（猜一明星）", "options": ["金城武","金秀賢","明金城","金士傑"], "answer": "金城武" },
         { "question": "電視機聲音關小聲點（猜一神明）", "options": ["觀世音","玉皇大帝","關公","文昌帝君"], "answer": "觀世音" },
@@ -145,14 +147,16 @@
     let score = 0;
     let questionCount = 0; 
     const maxQuestions = 20; 
-    const PLAY_LIMIT = 3; // 設定限制次數
+    const PLAY_LIMIT = 5; // 修改為 5 次讓大家玩得盡興點
     let timeLeft = 45;
     let timerInterval;
     let availableQuestions = [];
     let isChecking = false;
 
+    // 統計次數用的 API KEY (這會幫你自動建立統計項目)
+    const COUNT_API_URL = "https://api.countapi.it/hit/lantern_quiz_pze113024/plays";
+
     function startGame() {
-        // 遊玩次數檢查邏輯
         let playHistory = localStorage.getItem('lanternQuizPlayCount') || 0;
         playHistory = parseInt(playHistory);
 
@@ -161,20 +165,25 @@
             return;
         }
 
-        // 通過檢查，增加次數紀錄
         localStorage.setItem('lanternQuizPlayCount', playHistory + 1);
 
-        // 隱藏開始畫面，顯示遊戲畫面
+        // 方法 1：發送統計數據
+        fetch(COUNT_API_URL)
+            .then(res => res.json())
+            .then(data => {
+                // 將總次數暫存在畫面上，結算時使用
+                window.totalPlays = data.value;
+            })
+            .catch(err => console.log("統計暫時無法連線"));
+
         document.getElementById('start-screen').classList.add('hidden');
         document.getElementById('quiz-screen').classList.remove('hidden');
         
-        // 初始化參數
         availableQuestions = [...questions];
         score = 0;
         questionCount = 0;
         timeLeft = 45;
 
-        // 啟動計時器
         timerInterval = setInterval(() => {
             timeLeft--;
             document.getElementById('time').innerText = timeLeft;
@@ -189,8 +198,6 @@
 
     function nextQuestion() {
         isChecking = false;
-        
-        // 檢查是否已達 20 題
         if (questionCount >= maxQuestions) {
             document.getElementById('end-title').innerText = "🎉 恭喜完成 20 題！";
             endGame();
@@ -214,7 +221,7 @@
             const btn = document.createElement('button');
             btn.innerText = opt;
             btn.onclick = () => {
-                document.activeElement.blur(); // 解決手機預亮焦點問題
+                document.activeElement.blur(); 
                 checkResult(btn, opt, currentQuestion.answer);
             };
             container.appendChild(btn);
@@ -237,7 +244,6 @@
             selectedBtn.classList.add('wrong');
         }
 
-        // 0.6 秒後切換
         setTimeout(nextQuestion, 600);
     }
 
@@ -246,6 +252,14 @@
         document.getElementById('quiz-screen').classList.add('hidden');
         document.getElementById('score-board').style.display = 'block';
         document.getElementById('final-score').innerText = score;
+
+        // 顯示統計結果
+        const infoDiv = document.getElementById('visitor-info');
+        if (window.totalPlays) {
+            infoDiv.innerText = "目前全球總挑戰次數：" + window.totalPlays + " 次";
+        } else {
+            infoDiv.innerText = "感謝您的參與！";
+        }
     }
 </script>
 
