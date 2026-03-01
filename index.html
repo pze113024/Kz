@@ -86,9 +86,9 @@
         </div>
 
         <div class="survey-box">
-            <p style="margin: 0; color: #2980b9; font-weight: bold;">🎉 憑此畫面填寫問卷領獎</p>
+            <p style="margin: 0; color: #2980b9; font-weight: bold;">🎉 幫我填個問卷吧</p>
             <button class="survey-btn" onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLScT9hQ7M37i-dmsHVFZmmy6Rx_ZCRVQXoIchLFovZa32_Ir5A/viewform?usp=sf_link', '_blank')">
-                領取獎品 (填寫問卷)
+                填寫問卷
             </button>
         </div>
 
@@ -150,7 +150,7 @@
         { "question": "什麼國家的人都不用電的？", "options": ["緬甸","泰國","韓國","日本"], "answer": "緬甸" }
     ];
 
-    let score = 0; let questionCount = 0; const maxQuestions = 20; const PLAY_LIMIT = 5; let timeLeft = 45;
+    let score = 0; let questionCount = 0; const maxQuestions = 20; const PLAY_LIMIT = 3; let timeLeft = 45;
     let timerInterval; let availableQuestions = []; let isChecking = false;
 
     function startGame() {
