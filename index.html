@@ -54,6 +54,8 @@
         .survey-box { margin: 20px 0; padding: 15px; background: #f0f9ff; border-radius: 15px; border: 2px dashed #3498db; }
         .survey-btn { background: #27ae60; color: white; border: none; padding: 12px 20px; font-size: 1.2rem; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; box-shadow: 0 4px 0 #1e8449; margin-top: 10px; }
 
+        .best-score-tag { font-size: 1rem; color: #7f8c8d; margin-top: 5px; }
+
         .hidden { display: none; }
         #score-board { display: none; }
     </style>
@@ -64,6 +66,7 @@
     <div id="start-screen">
         <h1>🏮 燈你來挑戰 🏮</h1>
         <p>限時 45 秒，上限 20 題</p>
+        <p id="main-best-display" style="color:#f39c12; font-weight:bold; margin-bottom:20px;"></p>
         <button class="start-btn" onclick="startGame()">開始遊戲 GO!</button>
     </div>
 
@@ -78,7 +81,10 @@
 
     <div id="score-board">
         <h1 id="end-title">⏱️ 時間到！</h1>
-        <p style="font-size: 1.1rem; margin-bottom: 5px;">最終答對題數：<span id="final-score" style="color:#e67e22; font-size: 2.5rem;">0</span></p>
+        <div style="margin-bottom: 15px;">
+            <p style="font-size: 1.1rem; margin: 0;">本次答對題數：<span id="final-score" style="color:#e67e22; font-size: 2.5rem; font-weight:bold;">0</span></p>
+            <p class="best-score-tag">⭐ 歷史最高紀錄：<span id="best-score-display">0</span> 題</p>
+        </div>
         
         <div class="prize-box">
             <div style="font-size: 1rem; color: #666;">恭喜獲得領獎資格：</div>
@@ -86,7 +92,7 @@
         </div>
 
         <div class="survey-box">
-            <p style="margin: 0; color: #2980b9; font-weight: bold;">🎉 幫我填個問卷吧</p>
+            <p style="margin: 0; color: #2980b9; font-weight: bold;">🎉 憑最高分畫面填寫問卷領獎</p>
             <button class="survey-btn" onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLScT9hQ7M37i-dmsHVFZmmy6Rx_ZCRVQXoIchLFovZa32_Ir5A/viewform?usp=sf_link', '_blank')">
                 填寫問卷
             </button>
@@ -97,6 +103,14 @@
 </div>
 
 <script>
+    // 頁面載入時先讀取一次最高分
+    window.onload = function() {
+        const best = localStorage.getItem('lanternQuizBestScore') || 0;
+        if (best > 0) {
+            document.getElementById('main-best-display').innerText = "您的最高紀錄： " + best + " 題";
+        }
+    };
+
     const questions = [
         { "question": "金金金金金（猜一明星）", "options": ["金城武","金秀賢","明金城","金士傑"], "answer": "金城武" },
         { "question": "電視機聲音關小聲點（猜一神明）", "options": ["觀世音","玉皇大帝","關公","文昌帝君"], "answer": "觀世音" },
@@ -150,14 +164,14 @@
         { "question": "什麼國家的人都不用電的？", "options": ["緬甸","泰國","韓國","日本"], "answer": "緬甸" }
     ];
 
-    let score = 0; let questionCount = 0; const maxQuestions = 20; const PLAY_LIMIT = 3; let timeLeft = 45;
+    let score = 0; let questionCount = 0; const maxQuestions = 20; const PLAY_LIMIT = 5; let timeLeft = 45;
     let timerInterval; let availableQuestions = []; let isChecking = false;
 
     function startGame() {
         if(typeof gtag === 'function') trackGameStart();
         let playHistory = localStorage.getItem('lanternQuizPlayCount') || 0;
         playHistory = parseInt(playHistory);
-        if (playHistory >= PLAY_LIMIT) { alert("次數已用完囉！"); return; }
+        if (playHistory >= PLAY_LIMIT) { alert("挑戰次數已用完囉！感謝參與。"); return; }
         localStorage.setItem('lanternQuizPlayCount', playHistory + 1);
         document.getElementById('start-screen').classList.add('hidden');
         document.getElementById('quiz-screen').classList.remove('hidden');
@@ -201,16 +215,28 @@
         document.getElementById('score-board').style.display = 'block';
         document.getElementById('final-score').innerText = score;
 
+        // --- 歷史最高分邏輯 ---
+        let bestScore = localStorage.getItem('lanternQuizBestScore') || 0;
+        bestScore = parseInt(bestScore);
+        if (score > bestScore) {
+            bestScore = score;
+            localStorage.setItem('lanternQuizBestScore', bestScore);
+        }
+        document.getElementById('best-score-display').innerText = bestScore;
+
+        // --- 獎品判斷邏輯 (以歷史最高分為準) ---
         let prize = "";
-        if (score >= 12) {
+        const scoreToUse = bestScore; 
+
+        if (scoreToUse >= 12) {
             prize = "🌟 各區獎勵任選一項 🌟";
-        } else if (score >= 10) {
+        } else if (scoreToUse >= 10) {
             prize = "🎁 50元全家商品卡";
-        } else if (score >= 8) {
+        } else if (scoreToUse >= 8) {
             prize = "👜 手提保溫袋 或 隔熱碗 (二選一)";
-        } else if (score >= 6) {
+        } else if (scoreToUse >= 6) {
             prize = "🏇 搖搖馬燈籠 或 啦虎零錢包 (二選一)";
-        } else if (score >= 4) {
+        } else if (scoreToUse >= 4) {
             prize = "🏮 啦虎摺扇 或 大港橋手提袋 (二選一)";
         } else {
             prize = "😷 口罩組 或 福神L夾 (二選一)";
