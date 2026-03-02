@@ -47,15 +47,11 @@
         button.wrong { background-color: #e74c3c !important; color: white !important; border-color: #c0392b !important; }
         
         .start-btn { background: #e67e22; color: white; border: none; padding: 15px 40px; font-size: 1.5rem; border-radius: 50px; cursor: pointer; }
-        
         .prize-box { margin: 15px 0; padding: 15px; background: #fff0f0; border: 2px solid #e74c3c; border-radius: 15px; }
         #prize-text { font-size: 1.3rem; color: #c0392b; font-weight: bold; margin: 10px 0; line-height: 1.4; }
-        
         .survey-box { margin: 20px 0; padding: 15px; background: #f0f9ff; border-radius: 15px; border: 2px dashed #3498db; }
         .survey-btn { background: #27ae60; color: white; border: none; padding: 12px 20px; font-size: 1.2rem; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; box-shadow: 0 4px 0 #1e8449; margin-top: 10px; }
-
         .best-score-tag { font-size: 1rem; color: #7f8c8d; margin-top: 5px; }
-
         .hidden { display: none; }
         #score-board { display: none; }
     </style>
@@ -65,14 +61,14 @@
 <div id="game-container">
     <div id="start-screen">
         <h1>🏮 燈你來挑戰 🏮</h1>
-        <p>限時 45 秒，上限 20 題</p>
+        <p>限時 60 秒，上限 20 題</p>
         <p id="main-best-display" style="color:#f39c12; font-weight:bold; margin-bottom:20px;"></p>
         <button class="start-btn" onclick="startGame()">開始遊戲 GO!</button>
     </div>
 
     <div id="quiz-screen" class="hidden">
         <div class="status-bar">
-            <div class="timer">⏳ <span id="time">45</span>s</div>
+            <div class="timer">⏳ <span id="time">60</span>s</div>
             <div class="counter">第 <span id="current-count">1</span> / 20 題</div>
         </div>
         <div id="question-text" class="question">載入中...</div>
@@ -103,7 +99,6 @@
 </div>
 
 <script>
-    // 頁面載入時先讀取一次最高分
     window.onload = function() {
         const best = localStorage.getItem('lanternQuizBestScore') || 0;
         if (best > 0) {
@@ -164,7 +159,7 @@
         { "question": "什麼國家的人都不用電的？", "options": ["緬甸","泰國","韓國","日本"], "answer": "緬甸" }
     ];
 
-    let score = 0; let questionCount = 0; const maxQuestions = 20; const PLAY_LIMIT = 5; let timeLeft = 45;
+    let score = 0; let questionCount = 0; const maxQuestions = 20; const PLAY_LIMIT = 5; let timeLeft = 60;
     let timerInterval; let availableQuestions = []; let isChecking = false;
 
     function startGame() {
@@ -175,7 +170,7 @@
         localStorage.setItem('lanternQuizPlayCount', playHistory + 1);
         document.getElementById('start-screen').classList.add('hidden');
         document.getElementById('quiz-screen').classList.remove('hidden');
-        availableQuestions = [...questions]; score = 0; questionCount = 0; timeLeft = 45;
+        availableQuestions = [...questions]; score = 0; questionCount = 0; timeLeft = 60;
         timerInterval = setInterval(() => {
             timeLeft--; document.getElementById('time').innerText = timeLeft;
             if (timeLeft <= 0) endGame();
@@ -215,7 +210,6 @@
         document.getElementById('score-board').style.display = 'block';
         document.getElementById('final-score').innerText = score;
 
-        // --- 歷史最高分邏輯 ---
         let bestScore = localStorage.getItem('lanternQuizBestScore') || 0;
         bestScore = parseInt(bestScore);
         if (score > bestScore) {
@@ -224,10 +218,8 @@
         }
         document.getElementById('best-score-display').innerText = bestScore;
 
-        // --- 獎品判斷邏輯 (以歷史最高分為準) ---
         let prize = "";
         const scoreToUse = bestScore; 
-
         if (scoreToUse >= 12) {
             prize = "🌟 各區獎勵任選一項 🌟";
         } else if (scoreToUse >= 10) {
