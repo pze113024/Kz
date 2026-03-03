@@ -61,14 +61,14 @@
 <div id="game-container">
     <div id="start-screen">
         <h1>🏮 燈你來挑戰 🏮</h1>
-        <p>限時 60 秒，上限 20 題</p>
+        <p>限時 50 秒，上限 20 題</p>
         <p id="main-best-display" style="color:#f39c12; font-weight:bold; margin-bottom:20px;"></p>
         <button class="start-btn" onclick="startGame()">開始遊戲 GO!</button>
     </div>
 
     <div id="quiz-screen" class="hidden">
         <div class="status-bar">
-            <div class="timer">⏳ <span id="time">60</span>s</div>
+            <div class="timer">⏳ <span id="time">50</span>s</div>
             <div class="counter">第 <span id="current-count">1</span> / 20 題</div>
         </div>
         <div id="question-text" class="question">載入中...</div>
@@ -117,7 +117,7 @@
         { "question": "什麼動物最怕濕？", "options": ["雞","豬","狗","牛"], "answer": "雞" },
         { "question": "透明的劍是什麼劍？", "options": ["看不見","聽不見","倚天劍","石中劍"], "answer": "看不見" },
         { "question": "阮經天的舅公是誰？", "options": ["軟骨功","軟腳功","阮明天","阮昨天"], "answer": "軟骨功" },
-        { "question": "日月潭的中間是什麼？", "options": ["月","船","島","魚"], "answer": "月" },
+        { "question": "日月潭的中開是什麼？", "options": ["月","船","島","魚"], "answer": "月" },
         { "question": "啦啦隊不准坐下（猜地點）", "options": ["加油站","加水站","公車站","路邊站"], "answer": "加油站" },
         { "question": "偷什麼東西不犯法？", "options": ["偷笑","偷錢包","偷鞋子","偷吃霸王餐"], "answer": "偷笑" },
         { "question": "什麼水果視力最差？", "options": ["芒果","蓮霧","蘋果","棗子"], "answer": "芒果" },
@@ -150,19 +150,19 @@
         { "question": "狼來了", "options": ["楊桃","蜜桃","壽桃","哈密瓜"], "answer": "楊桃" },
         { "question": "七十二小時(猜字)", "options": ["日","朋","晶","昌"], "answer": "晶" },
         { "question": "少了一本書(猜成語)", "options": ["缺一不可","萬萬不可","不可思議","不可理喻"], "answer": "缺一不可" },
-        { "question": "甚麼科系畢業後去賣壽司", "options": ["美術系","國文系","化學系","財經系"], "answer": "美術系" },
+        { "question": "甚麼科系畢業後去「賣壽司」", "options": ["美術系","國文系","化學系","財經系"], "answer": "美術系" },
         { "question": "綠衣漢，街上站，光吃紙，不吃飯", "options": ["郵筒","電線杆","路燈","消防栓"], "answer": "郵筒" },
         { "question": "有點自大(猜一字)", "options": ["臭","昊","美","尖"], "answer": "臭" },
         { "question": "雙火雙水(猜地名)", "options": ["淡水","清水","清境","澎湖"], "answer": "淡水" },
         { "question": "男生太多(猜一字)", "options": ["妙","好","如","姑"], "answer": "妙" },
         { "question": "台灣午後是誰", "options": ["雷陣雨","陳芳語","張宇","周子瑜"], "answer": "雷陣雨" },
         { "question": "拿起手機點點點，稅務申報一瞬間", "options": ["使用「手機報稅」","雲端發票","線上申辦","行動支付"], "answer": "使用「手機報稅」" },
-         { "question": "權利的盾牌，稅務的橋樑", "options": ["納保官","消防員","警察","醫生"], "answer": "納保官" },
-         { "question": "網路購物不滿意，七天之內有保障(猜法規)", "options": ["消保法","道交條例","智慧財產權法","社維法"], "answer": "消保法" },
+        { "question": "權利的盾牌，稅務的橋樑", "options": ["納保官","消防員","警察","醫生"], "answer": "納保官" },
+        { "question": "網路購物不滿意，七天之內有保障(猜法規)", "options": ["消保法","道交條例","智慧財產權法","社維法"], "answer": "消保法" },
         { "question": "什麼國家的人都不用電的？", "options": ["緬甸","泰國","韓國","日本"], "answer": "緬甸" }
     ];
 
-    let score = 0; let questionCount = 0; const maxQuestions = 20; const PLAY_LIMIT = 3; let timeLeft = 60;
+    let score = 0; let questionCount = 0; const maxQuestions = 20; const PLAY_LIMIT = 3; let timeLeft = 50;
     let timerInterval; let availableQuestions = []; let isChecking = false;
 
     function startGame() {
@@ -173,7 +173,7 @@
         localStorage.setItem('lanternQuizPlayCount', playHistory + 1);
         document.getElementById('start-screen').classList.add('hidden');
         document.getElementById('quiz-screen').classList.remove('hidden');
-        availableQuestions = [...questions]; score = 0; questionCount = 0; timeLeft = 60;
+        availableQuestions = [...questions]; score = 0; questionCount = 0; timeLeft = 50;
         timerInterval = setInterval(() => {
             timeLeft--; document.getElementById('time').innerText = timeLeft;
             if (timeLeft <= 0) endGame();
@@ -224,8 +224,8 @@
         let prize = "";
         const scoreToUse = bestScore; 
         
-        // 門檻已更新：15 題以上任選
-        if (scoreToUse >= 15) {
+        // 門檻更新：13 題以上任選
+        if (scoreToUse >= 13) {
             prize = "🌟 各區獎勵任選一項 🌟";
         } else if (scoreToUse >= 10) {
             prize = "🎁 50元全家商品卡";
