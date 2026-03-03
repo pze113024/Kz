@@ -156,10 +156,13 @@
         { "question": "雙火雙水(猜地名)", "options": ["淡水","清水","清境","澎湖"], "answer": "淡水" },
         { "question": "男生太多(猜一字)", "options": ["妙","好","如","姑"], "answer": "妙" },
         { "question": "台灣午後是誰", "options": ["雷陣雨","陳芳語","張宇","周子瑜"], "answer": "雷陣雨" },
+        { "question": "拿起手機點點點，稅務申報一瞬間", "options": ["使用「手機報稅」","雲端發票","線上申辦","行動支付"], "answer": "使用「手機報稅」" },
+         { "question": "權利的盾牌，稅務的橋樑", "options": ["納保官","消防員","警察","醫生"], "answer": "納保官" },
+         { "question": "網路購物不滿意，七天之內有保障(猜法規)", "options": ["消保法","道交條例","智慧財產權法","社維法"], "answer": "消保法" },
         { "question": "什麼國家的人都不用電的？", "options": ["緬甸","泰國","韓國","日本"], "answer": "緬甸" }
     ];
 
-    let score = 0; let questionCount = 0; const maxQuestions = 20; const PLAY_LIMIT = 5; let timeLeft = 60;
+    let score = 0; let questionCount = 0; const maxQuestions = 20; const PLAY_LIMIT = 3; let timeLeft = 60;
     let timerInterval; let availableQuestions = []; let isChecking = false;
 
     function startGame() {
@@ -220,7 +223,9 @@
 
         let prize = "";
         const scoreToUse = bestScore; 
-        if (scoreToUse >= 12) {
+        
+        // 門檻已更新：15 題以上任選
+        if (scoreToUse >= 15) {
             prize = "🌟 各區獎勵任選一項 🌟";
         } else if (scoreToUse >= 10) {
             prize = "🎁 50元全家商品卡";
